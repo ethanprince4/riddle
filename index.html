@@ -7,8 +7,8 @@
 <meta name="theme-color" content="#4a1826" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-<meta name="apple-mobile-web-app-title" content="The Game" />
-<title>The Game</title>
+<meta name="apple-mobile-web-app-title" content="Leap of Faith" />
+<title>Leap of Faith</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300&family=Jost:wght@300;400&display=swap" rel="stylesheet">
@@ -252,7 +252,7 @@
   <!-- Screen 0: intro / terms -->
   <section class="screen active shown" id="intro" aria-label="Before you begin">
     <div class="signet" aria-hidden="true">&#9670;</div>
-    <p class="intro-text">This is a game for you alone to play. Do not share this website or these questions with anyone besides me. Do not try and get around my questions. Prove you're to be trusted.</p>
+    <p class="intro-text">This is a puzzle for you and you alone. Do not share this website or these questions with anyone besides me. Do not try and get around my questions. Prove you're to be trusted.</p>
     <p class="deadline">You have until 7/21/26 at 17:00.</p>
     <button class="btn understand" id="beginBtn">I understand.</button>
   </section>
@@ -267,7 +267,7 @@
              spellcheck="false" placeholder="…" aria-label="Your answer" />
     </div>
     <button class="btn enter" id="submit1">Enter</button>
-    <p class="refusal" id="refusal1" role="status" aria-live="polite">That isn't the name. Try again.</p>
+    <p class="refusal" id="refusal1" role="status" aria-live="polite">No. Do better.</p>
   </section>
 
   <!-- Screen 2: interstitial -->
@@ -287,14 +287,14 @@
              spellcheck="false" placeholder="…" aria-label="Your answer" />
     </div>
     <button class="btn enter" id="submit2">Enter</button>
-    <p class="refusal" id="refusal2" role="status" aria-live="polite">No. Listen again.</p>
+    <p class="refusal" id="refusal2" role="status" aria-live="polite">No. Think harder.</p>
   </section>
 
   <!-- Screen 4: final / completion / win screen -->
   <!-- shown to the winner on completion; see show('victory') -->
   <section class="screen" id="victory" aria-label="Complete">
     <div class="signet" aria-hidden="true">&#9670;</div>
-    <p class="line">You've reached the end of the path. You've won.<br>Screenshot this page and send it to me &mdash; that's how I'll know you made it.</p>
+    <p class="line">You've reached the end of the path. You've won.<br>Screenshot this page and send it to me to get your prize.</p>
   </section>
 
   <!-- Screen 5: end -->
