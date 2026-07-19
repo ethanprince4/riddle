@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>The Game</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Jost:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#17121e;
+    --bg-edge:#100b16;
+    --ink:#ece6f0;
+    --muted:#8a8095;
+    --rose:#d8a3ad;
+    --wine:#b06a7a;
+    --line:rgba(216,163,173,0.22);
+    --line-lit:rgba(216,163,173,0.55);
+  }
+
+  *{box-sizing:border-box;}
+
+  html,body{height:100%;}
+
+  body{
+    margin:0;
+    background:
+      radial-gradient(120% 120% at 50% 40%, var(--bg) 0%, var(--bg-edge) 100%);
+    color:var(--ink);
+    font-family:"Jost", system-ui, sans-serif;
+    font-weight:300;
+    overflow:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* the "path" — a soft light that breathes behind everything */
+  .path{
+    position:fixed;
+    top:38%;
+    left:50%;
+    width:min(70vw,540px);
+    height:min(70vw,540px);
+    transform:translate(-50%,-50%);
+    border-radius:50%;
+    background:radial-gradient(circle,
+      rgba(216,163,173,0.20) 0%,
+      rgba(176,106,122,0.10) 35%,
+      rgba(23,18,30,0) 70%);
+    filter:blur(6px);
+    pointer-events:none;
+    animation:breathe 7s ease-in-out infinite;
+    z-index:0;
+  }
+  @keyframes breathe{
+    0%,100%{opacity:.65; transform:translate(-50%,-50%) scale(1);}
+    50%{opacity:1; transform:translate(-50%,-50%) scale(1.08);}
+  }
+  /* on the final screen the path settles into stillness */
+  body.quiet .path{
+    animation:none;
+    opacity:.4;
+    transition:opacity 2.5s ease;
+  }
+
+  .screen{
+    position:fixed;
+    inset:0;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding:8vw 7vw;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .9s ease;
+    z-index:1;
+  }
+  .screen.active{opacity:1; pointer-events:auto;}
+
+  /* the recurring signet — the point of light on the path */
+  .signet{
+    color:var(--rose);
+    font-size:1rem;
+    line-height:1;
+    margin-bottom:2.4rem;
+    opacity:.7;
+    text-shadow:0 0 14px rgba(216,163,173,.6);
+  }
+
+  .question{
+    font-family:"Cormorant Garamond", Georgia, serif;
+    font-weight:300;
+    font-size:clamp(1.9rem,5.2vw,3.4rem);
+    line-height:1.22;
+    letter-spacing:.4px;
+    max-width:20ch;
+    margin:0 0 3rem;
+  }
+
+  .field{
+    width:min(90vw,420px);
+    position:relative;
+  }
+  .field input{
+    width:100%;
+    background:transparent;
+    border:none;
+    border-bottom:1px solid var(--line);
+    color:var(--ink);
+    font-family:"Jost", system-ui, sans-serif;
+    font-weight:300;
+    font-size:1.35rem;
+    text-align:center;
+    letter-spacing:.5px;
+    padding:.5rem .25rem .7rem;
+    caret-color:var(--rose);
+    outline:none;
+    transition:border-color .4s ease;
+  }
+  .field input::placeholder{color:var(--muted); opacity:.6;}
+  .field input:focus{border-bottom-color:var(--line-lit);}
+  .field.refused input{border-bottom-color:var(--wine);}
+
+  .row{
+    margin-top:2.4rem;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:1.2rem;
+  }
+
+  .go{
+    appearance:none;
+    background:transparent;
+    border:1px solid var(--line);
+    color:var(--rose);
+    width:52px;
+    height:52px;
+    border-radius:50%;
+    font-size:1.3rem;
+    line-height:1;
+    cursor:pointer;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    transition:border-color .3s ease, background .3s ease, transform .3s ease;
+  }
+  .go:hover{border-color:var(--rose); background:rgba(216,163,173,.08);}
+  .go:active{transform:scale(.94);}
+
+  .hint{
+    font-size:.72rem;
+    letter-spacing:.22em;
+    text-transform:uppercase;
+    color:var(--muted);
+  }
+
+  .refusal{
+    margin-top:1.6rem;
+    min-height:1.2em;
+    font-size:.8rem;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    color:var(--wine);
+    opacity:0;
+    transition:opacity .4s ease;
+  }
+  .refusal.show{opacity:1;}
+
+  /* interstitial + final copy */
+  .line{
+    font-family:"Cormorant Garamond", Georgia, serif;
+    font-weight:300;
+    font-size:clamp(1.8rem,4.8vw,3rem);
+    line-height:1.3;
+    max-width:22ch;
+    margin:0;
+  }
+  .line em{font-style:italic; color:var(--rose);}
+
+  .continue{
+    appearance:none;
+    margin-top:3rem;
+    background:transparent;
+    border:1px solid var(--line-lit);
+    color:var(--ink);
+    font-family:"Jost", system-ui, sans-serif;
+    font-weight:300;
+    font-size:.82rem;
+    letter-spacing:.28em;
+    text-transform:uppercase;
+    padding:.9rem 2.4rem;
+    border-radius:2px;
+    cursor:pointer;
+    transition:border-color .3s ease, background .3s ease, color .3s ease;
+  }
+  .continue:hover{border-color:var(--rose); color:var(--rose); background:rgba(216,163,173,.06);}
+
+  .final .line{max-width:24ch;}
+
+  /* visible keyboard focus everywhere */
+  a:focus-visible, button:focus-visible, input:focus-visible{
+    outline:2px solid var(--rose);
+    outline-offset:4px;
+  }
+
+  @keyframes shudder{
+    0%,100%{transform:translateX(0);}
+    20%{transform:translateX(-5px);}
+    60%{transform:translateX(5px);}
+    80%{transform:translateX(-3px);}
+  }
+  .field.refused{animation:shudder .35s ease;}
+
+  @media (prefers-reduced-motion: reduce){
+    .path{animation:none;}
+    .screen{transition:none;}
+    .field.refused{animation:none;}
+  }
+</style>
+</head>
+<body>
+  <div class="path" aria-hidden="true"></div>
+
+  <!-- Screen 1: first question -->
+  <section class="screen active" id="q1" aria-label="Question one">
+    <div class="signet" aria-hidden="true">&#9670;</div>
+    <h1 class="question">What nickname did you want me to reserve only for you?</h1>
+    <div class="field" id="field1">
+      <input id="answer1" type="text" inputmode="text" autocomplete="off"
+             autocapitalize="off" spellcheck="false" placeholder="…"
+             aria-label="Your answer" />
+    </div>
+    <div class="row">
+      <button class="go" id="submit1" aria-label="Submit answer">&#8594;</button>
+      <span class="hint">press enter</span>
+    </div>
+    <p class="refusal" id="refusal1" role="status" aria-live="polite">That isn't the name. Try again.</p>
+  </section>
+
+  <!-- Screen 2: interstitial -->
+  <section class="screen" id="pass1" aria-label="You may continue">
+    <div class="signet" aria-hidden="true">&#9670;</div>
+    <p class="line">Very good, princess.<br>You understand the game.</p>
+    <button class="continue" id="continue1">Continue</button>
+  </section>
+
+  <!-- Screen 3: second question -->
+  <section class="screen" id="q2" aria-label="Question two">
+    <div class="signet" aria-hidden="true">&#9670;</div>
+    <h1 class="question">What did the world hear the first time we kissed?</h1>
+    <div class="field" id="field2">
+      <input id="answer2" type="text" inputmode="text" autocomplete="off"
+             autocapitalize="off" spellcheck="false" placeholder="…"
+             aria-label="Your answer" />
+    </div>
+    <div class="row">
+      <button class="go" id="submit2" aria-label="Submit answer">&#8594;</button>
+      <span class="hint">press enter</span>
+    </div>
+    <p class="refusal" id="refusal2" role="status" aria-live="polite">No. Listen again.</p>
+  </section>
+
+  <!-- Screen 4: final -->
+  <section class="screen final" id="end" aria-label="The end, for now">
+    <div class="signet" aria-hidden="true">&#9670;</div>
+    <p class="line">The path is quiet for now.<br>When it speaks again, <em>you'll know.</em></p>
+  </section>
+
+<script>
+  // Lenient answer check: lowercase, trim, strip wrapping quotes and trailing . ! ?
+  function normalize(v){
+    return v
+      .toLowerCase()
+      .trim()
+      .replace(/^["'\u201c\u2018]+|["'\u201d\u2019]+$/g, '')
+      .replace(/[.!?]+$/g, '')
+      .trim();
+  }
+
+  // Self-contained SHA-256 (no library, works over http or https, offline).
+  // The plaintext answers never appear in this file — only their fingerprints.
+  function sha256(ascii){
+    function rightRotate(v,n){ return (v>>>n)|(v<<(32-n)); }
+    var mathPow=Math.pow, maxWord=mathPow(2,32), result='';
+    var words=[], asciiBitLength=ascii.length*8;
+    var hash=sha256.h=sha256.h||[], k=sha256.k=sha256.k||[], primeCounter=k.length;
+    var isComposite={};
+    for(var candidate=2; primeCounter<64; candidate++){
+      if(!isComposite[candidate]){
+        for(var i=0;i<313;i+=candidate){ isComposite[i]=candidate; }
+        hash[primeCounter]=(mathPow(candidate,0.5)*maxWord)|0;
+        k[primeCounter++]=(mathPow(candidate,1/3)*maxWord)|0;
+      }
+    }
+    ascii+='\x80';
+    while(ascii.length%64-56) ascii+='\x00';
+    for(var i=0;i<ascii.length;i++){
+      var j=ascii.charCodeAt(i);
+      if(j>>8) return '';
+      words[i>>2]|=j<<((3-i)%4)*8;
+    }
+    words[words.length]=(asciiBitLength/maxWord)|0;
+    words[words.length]=asciiBitLength;
+    for(var j=0;j<words.length;){
+      var w=words.slice(j,j+=16), oldHash=hash;
+      hash=hash.slice(0,8);
+      for(var i=0;i<64;i++){
+        var w15=w[i-15], w2=w[i-2], a=hash[0], e=hash[4];
+        var temp1=hash[7]
+          +(rightRotate(e,6)^rightRotate(e,11)^rightRotate(e,25))
+          +((e&hash[5])^(~e&hash[6]))+k[i]
+          +(w[i]=(i<16)?w[i]:(
+              w[i-16]
+              +(rightRotate(w15,7)^rightRotate(w15,18)^(w15>>>3))
+              +w[i-7]
+              +(rightRotate(w2,17)^rightRotate(w2,19)^(w2>>>10))
+            )|0);
+        var temp2=(rightRotate(a,2)^rightRotate(a,13)^rightRotate(a,22))
+          +((a&hash[1])^(a&hash[2])^(hash[1]&hash[2]));
+        hash=[(temp1+temp2)|0].concat(hash);
+        hash[4]=(hash[4]+temp1)|0;
+      }
+      for(var i=0;i<8;i++){ hash[i]=(hash[i]+oldHash[i])|0; }
+    }
+    for(var i=0;i<8;i++){
+      for(var j=3;j+1;j--){
+        var b=(hash[i]>>(j*8))&255;
+        result+=((b<16)?0:'')+b.toString(16);
+      }
+    }
+    return result;
+  }
+
+  const screens = {
+    q1: document.getElementById('q1'),
+    pass1: document.getElementById('pass1'),
+    q2: document.getElementById('q2'),
+    end: document.getElementById('end'),
+  };
+
+  function show(id){
+    Object.values(screens).forEach(s => s.classList.remove('active'));
+    screens[id].classList.add('active');
+    if(id === 'end'){ document.body.classList.add('quiet'); }
+    // move focus to the input if there is one
+    const input = screens[id].querySelector('input');
+    if(input){ setTimeout(() => input.focus(), 200); }
+  }
+
+  function wireQuestion(inputId, submitId, fieldId, refusalId, answerHash, onPass){
+    const input = document.getElementById(inputId);
+    const submit = document.getElementById(submitId);
+    const field = document.getElementById(fieldId);
+    const refusal = document.getElementById(refusalId);
+
+    function attempt(){
+      if(sha256(normalize(input.value)) === answerHash){
+        refusal.classList.remove('show');
+        field.classList.remove('refused');
+        onPass();
+      } else {
+        refusal.classList.add('show');
+        field.classList.remove('refused');
+        // reflow so the shudder animation can replay
+        void field.offsetWidth;
+        field.classList.add('refused');
+        input.select();
+      }
+    }
+
+    submit.addEventListener('click', attempt);
+    input.addEventListener('keydown', e => {
+      if(e.key === 'Enter'){ e.preventDefault(); attempt(); }
+    });
+    // clear the refusal once they start retyping
+    input.addEventListener('input', () => refusal.classList.remove('show'));
+  }
+
+  // fingerprints, not answers — you cannot read the words out of these
+  wireQuestion('answer1','submit1','field1','refusal1',
+    '04e77bf8f95cb3e1a36a59d1e93857c411930db646b46c218a0352e432023cf2', () => show('pass1'));
+  wireQuestion('answer2','submit2','field2','refusal2',
+    'e6c18fdbe59783dfefef3595cd288bcb7ce912d36854b5e8faaef31235d9031b', () => show('end'));
+
+  document.getElementById('continue1').addEventListener('click', () => show('q2'));
+
+  // start with focus in the first field
+  window.addEventListener('load', () => document.getElementById('answer1').focus());
+</script>
+</body>
+</html>
