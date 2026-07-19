@@ -280,6 +280,60 @@
       .trim();
   }
 
+  // Self-contained SHA-256 (no library, works over http or https, offline).
+  // The plaintext answers never appear in this file — only their fingerprints.
+  function sha256(ascii){
+    function rightRotate(v,n){ return (v>>>n)|(v<<(32-n)); }
+    var mathPow=Math.pow, maxWord=mathPow(2,32), result='';
+    var words=[], asciiBitLength=ascii.length*8;
+    var hash=sha256.h=sha256.h||[], k=sha256.k=sha256.k||[], primeCounter=k.length;
+    var isComposite={};
+    for(var candidate=2; primeCounter<64; candidate++){
+      if(!isComposite[candidate]){
+        for(var i=0;i<313;i+=candidate){ isComposite[i]=candidate; }
+        hash[primeCounter]=(mathPow(candidate,0.5)*maxWord)|0;
+        k[primeCounter++]=(mathPow(candidate,1/3)*maxWord)|0;
+      }
+    }
+    ascii+='\x80';
+    while(ascii.length%64-56) ascii+='\x00';
+    for(var i=0;i<ascii.length;i++){
+      var j=ascii.charCodeAt(i);
+      if(j>>8) return '';
+      words[i>>2]|=j<<((3-i)%4)*8;
+    }
+    words[words.length]=(asciiBitLength/maxWord)|0;
+    words[words.length]=asciiBitLength;
+    for(var j=0;j<words.length;){
+      var w=words.slice(j,j+=16), oldHash=hash;
+      hash=hash.slice(0,8);
+      for(var i=0;i<64;i++){
+        var w15=w[i-15], w2=w[i-2], a=hash[0], e=hash[4];
+        var temp1=hash[7]
+          +(rightRotate(e,6)^rightRotate(e,11)^rightRotate(e,25))
+          +((e&hash[5])^(~e&hash[6]))+k[i]
+          +(w[i]=(i<16)?w[i]:(
+              w[i-16]
+              +(rightRotate(w15,7)^rightRotate(w15,18)^(w15>>>3))
+              +w[i-7]
+              +(rightRotate(w2,17)^rightRotate(w2,19)^(w2>>>10))
+            )|0);
+        var temp2=(rightRotate(a,2)^rightRotate(a,13)^rightRotate(a,22))
+          +((a&hash[1])^(a&hash[2])^(hash[1]&hash[2]));
+        hash=[(temp1+temp2)|0].concat(hash);
+        hash[4]=(hash[4]+temp1)|0;
+      }
+      for(var i=0;i<8;i++){ hash[i]=(hash[i]+oldHash[i])|0; }
+    }
+    for(var i=0;i<8;i++){
+      for(var j=3;j+1;j--){
+        var b=(hash[i]>>(j*8))&255;
+        result+=((b<16)?0:'')+b.toString(16);
+      }
+    }
+    return result;
+  }
+
   const screens = {
     q1: document.getElementById('q1'),
     pass1: document.getElementById('pass1'),
@@ -296,14 +350,14 @@
     if(input){ setTimeout(() => input.focus(), 200); }
   }
 
-  function wireQuestion(inputId, submitId, fieldId, refusalId, answer, onPass){
+  function wireQuestion(inputId, submitId, fieldId, refusalId, answerHash, onPass){
     const input = document.getElementById(inputId);
     const submit = document.getElementById(submitId);
     const field = document.getElementById(fieldId);
     const refusal = document.getElementById(refusalId);
 
     function attempt(){
-      if(normalize(input.value) === answer){
+      if(sha256(normalize(input.value)) === answerHash){
         refusal.classList.remove('show');
         field.classList.remove('refused');
         onPass();
@@ -325,8 +379,11 @@
     input.addEventListener('input', () => refusal.classList.remove('show'));
   }
 
-  wireQuestion('answer1','submit1','field1','refusal1','princess', () => show('pass1'));
-  wireQuestion('answer2','submit2','field2','refusal2','silence', () => show('end'));
+  // fingerprints, not answers — you cannot read the words out of these
+  wireQuestion('answer1','submit1','field1','refusal1',
+    '04e77bf8f95cb3e1a36a59d1e93857c411930db646b46c218a0352e432023cf2', () => show('pass1'));
+  wireQuestion('answer2','submit2','field2','refusal2',
+    'e6c18fdbe59783dfefef3595cd288bcb7ce912d36854b5e8faaef31235d9031b', () => show('end'));
 
   document.getElementById('continue1').addEventListener('click', () => show('q2'));
 
