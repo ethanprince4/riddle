@@ -4,24 +4,24 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="color-scheme" content="dark" />
-<meta name="theme-color" content="#4a1826" />
+<meta name="theme-color" content="#2a0e13" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-<meta name="apple-mobile-web-app-title" content="Leap of Faith" />
-<title>Leap of Faith</title>
+<meta name="apple-mobile-web-app-title" content="The Game" />
+<title>The Game</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300&family=Jost:wght@300;400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#4a1826;
-    --bg-edge:#341019;
-    --ink:#ffe9f1;
-    --muted:#d59fb2;
-    --rose:#ff9dc0;
-    --wine:#ff6fa1;
-    --line:rgba(255,157,192,0.30);
-    --line-lit:rgba(255,157,192,0.62);
+    --bg:#2a0e13;
+    --bg-edge:#120809;
+    --ink:#f2e4e5;
+    --muted:#b0868d;
+    --ember:#e23b47;
+    --ember-deep:#a11f2b;
+    --line:rgba(226,59,71,0.30);
+    --line-lit:rgba(226,59,71,0.62);
     --fade:.55s;
   }
 
@@ -46,32 +46,29 @@
     -webkit-font-smoothing:antialiased;
   }
 
-  /* the "path" — a soft light that breathes behind everything */
+  /* the ember — a smoldering light that flares and settles, like a coal */
   .path{
     position:fixed;
     top:38%;
     left:50%;
-    width:min(80vw,560px);
-    height:min(80vw,560px);
+    width:min(82vw,580px);
+    height:min(82vw,580px);
     transform:translate(-50%,-50%);
     border-radius:50%;
     background:radial-gradient(circle,
-      rgba(255,157,192,0.26) 0%,
-      rgba(255,111,161,0.12) 35%,
-      rgba(74,24,38,0) 70%);
-    filter:blur(6px);
+      rgba(226,59,71,0.30) 0%,
+      rgba(161,31,43,0.15) 34%,
+      rgba(42,14,19,0) 70%);
+    filter:blur(7px);
     pointer-events:none;
-    animation:breathe 7s ease-in-out infinite;
+    animation:ember 4.6s ease-in-out infinite;
     z-index:0;
   }
-  @keyframes breathe{
-    0%,100%{opacity:.7; transform:translate(-50%,-50%) scale(1);}
-    50%{opacity:1; transform:translate(-50%,-50%) scale(1.08);}
-  }
-  body.quiet .path{
-    animation:none;
-    opacity:.42;
-    transition:opacity 2.5s ease;
+  @keyframes ember{
+    0%   {opacity:.62; transform:translate(-50%,-50%) scale(1);}
+    12%  {opacity:1;   transform:translate(-50%,-50%) scale(1.07);}
+    42%  {opacity:.72; transform:translate(-50%,-50%) scale(1.01);}
+    100% {opacity:.62; transform:translate(-50%,-50%) scale(1);}
   }
 
   .screen{
@@ -83,9 +80,9 @@
     justify-content:center;
     text-align:center;
     padding:
-      calc(7vh + env(safe-area-inset-top))
+      calc(8vh + env(safe-area-inset-top))
       calc(7vw + env(safe-area-inset-right))
-      calc(6vh + env(safe-area-inset-bottom))
+      calc(7vh + env(safe-area-inset-bottom))
       calc(7vw + env(safe-area-inset-left));
     opacity:0;
     transition:opacity var(--fade) ease;
@@ -94,43 +91,26 @@
   }
   .screen.active{display:flex;}
   .screen.shown{opacity:1;}
+  /* for content that can run taller than the screen (the poem) */
+  .screen.scroll{justify-content:flex-start;}
 
   .signet{
-    color:var(--rose);
+    color:var(--ember);
     font-size:1rem;
     line-height:1;
     margin-bottom:2.2rem;
-    opacity:.75;
-    text-shadow:0 0 16px rgba(255,157,192,.7);
+    opacity:.9;
+    text-shadow:0 0 18px rgba(226,59,71,.75);
   }
 
   .question{
     font-family:"Cormorant Garamond", Georgia, serif;
-    font-weight:300;
-    font-size:clamp(1.95rem,7vw,3.4rem);
-    line-height:1.2;
-    letter-spacing:.3px;
-    max-width:18ch;
-    margin:0 0 2.6rem;
-  }
-
-  /* intro warning text */
-  .intro-text{
-    font-family:"Cormorant Garamond", Georgia, serif;
-    font-weight:400;
-    font-size:clamp(1.35rem,5vw,2rem);
-    line-height:1.5;
-    max-width:26ch;
-    margin:0 0 1.6rem;
-  }
-  .deadline{
-    font-family:"Cormorant Garamond", Georgia, serif;
     font-weight:500;
-    font-style:italic;
-    font-size:clamp(1.2rem,4.4vw,1.7rem);
-    line-height:1.4;
-    color:var(--rose);
-    margin:0;
+    font-size:clamp(2rem,7.2vw,3.5rem);
+    line-height:1.18;
+    letter-spacing:.2px;
+    max-width:16ch;
+    margin:0 0 2.6rem;
   }
 
   .field{
@@ -152,15 +132,14 @@
     text-align:center;
     letter-spacing:.5px;
     padding:.55rem .25rem .75rem;
-    caret-color:var(--rose);
+    caret-color:var(--ember);
     outline:none;
     transition:border-color .4s ease;
   }
   .field input::placeholder{color:var(--muted); opacity:.6;}
   .field input:focus{border-bottom-color:var(--line-lit);}
-  .field.refused input{border-bottom-color:var(--wine);}
+  .field.refused input{border-bottom-color:var(--ember);}
 
-  /* one shared button — Enter / Continue / I understand / Finish */
   .btn{
     -webkit-appearance:none;
     appearance:none;
@@ -174,9 +153,9 @@
     border-radius:999px;
     color:var(--ink);
     font-family:"Jost", system-ui, sans-serif;
-    font-weight:300;
+    font-weight:400;
     font-size:1rem;
-    letter-spacing:.28em;
+    letter-spacing:.3em;
     text-transform:uppercase;
     text-decoration:none;
     cursor:pointer;
@@ -187,53 +166,54 @@
   }
   .btn:active{
     transform:scale(.97);
-    border-color:var(--rose);
-    color:var(--rose);
-    background:rgba(255,157,192,.12);
+    border-color:var(--ember);
+    color:var(--ember);
+    background:rgba(226,59,71,.14);
   }
   @media (hover:hover){
     .btn:hover{
-      border-color:var(--rose);
-      color:var(--rose);
-      background:rgba(255,157,192,.08);
+      border-color:var(--ember);
+      color:var(--ember);
+      background:rgba(226,59,71,.09);
     }
   }
   .btn.enter{margin-top:2.2rem;}
-  .btn.continue{margin-top:2.8rem;}
-  .btn.understand{margin-top:2.8rem;}
-  .btn.finish{margin-top:2.8rem;}
 
   .refusal{
     margin-top:1.6rem;
     min-height:1.2em;
     font-size:.8rem;
-    letter-spacing:.18em;
+    letter-spacing:.2em;
     text-transform:uppercase;
-    color:var(--wine);
+    color:var(--ember);
     opacity:0;
     transition:opacity .4s ease;
   }
   .refusal.show{opacity:1;}
 
-  /* plain closing line — same font, no fancy business */
-  .line{
+  /* the poem */
+  .poem{
     font-family:"Cormorant Garamond", Georgia, serif;
     font-weight:400;
-    font-size:clamp(1.85rem,6.5vw,3rem);
-    line-height:1.35;
-    max-width:24ch;
+    font-size:clamp(1.2rem,4.6vw,1.75rem);
+    line-height:1.5;
+    letter-spacing:.2px;
+    max-width:34ch;
     margin:0;
+    color:var(--ink);
   }
+  .poem p{margin:0 0 1.5rem;}
+  .poem p:last-child{margin-bottom:0;}
 
   a:focus-visible, button:focus-visible, input:focus-visible{
-    outline:2px solid var(--rose);
+    outline:2px solid var(--ember);
     outline-offset:4px;
   }
 
   @keyframes shudder{
     0%,100%{transform:translateX(0);}
-    20%{transform:translateX(-5px);}
-    60%{transform:translateX(5px);}
+    20%{transform:translateX(-6px);}
+    60%{transform:translateX(6px);}
     80%{transform:translateX(-3px);}
   }
   .field.refused{animation:shudder .35s ease;}
@@ -249,98 +229,41 @@
 <body>
   <div class="path" aria-hidden="true"></div>
 
-  <!-- Screen 0: intro / terms -->
-  <section class="screen active shown" id="intro" aria-label="Before you begin">
+  <!-- Screen 1: the question -->
+  <section class="screen active shown" id="q1" aria-label="Question">
     <div class="signet" aria-hidden="true">&#9670;</div>
-    <p class="intro-text">This is a puzzle for you and you alone. Do not share this website or these questions with anyone besides me. Do not try and get around my questions. Prove you're to be trusted.</p>
-    <p class="deadline">You have until 7/21/26 at 17:00.</p>
-    <button class="btn understand" id="beginBtn">I understand.</button>
-  </section>
-
-  <!-- Screen 1: first question -->
-  <section class="screen" id="q1" aria-label="Question one">
-    <div class="signet" aria-hidden="true">&#9670;</div>
-    <h1 class="question">What nickname did you want me to reserve only for you?</h1>
+    <h1 class="question">What broke to bring us together?</h1>
     <div class="field" id="field1">
       <input id="answer1" type="text" inputmode="text" enterkeyhint="go"
              autocomplete="off" autocorrect="off" autocapitalize="off"
              spellcheck="false" placeholder="…" aria-label="Your answer" />
     </div>
     <button class="btn enter" id="submit1">Enter</button>
-    <p class="refusal" id="refusal1" role="status" aria-live="polite">No. Do better.</p>
+    <p class="refusal" id="refusal1" role="status" aria-live="polite">That isn't what broke. Try again.</p>
   </section>
 
-  <!-- Screen 2: interstitial -->
-  <section class="screen" id="pass1" aria-label="You may continue">
+  <!-- Screen 2: the poem (filled in from the Worker after the correct answer) -->
+  <section class="screen scroll" id="poem" aria-label="For you">
     <div class="signet" aria-hidden="true">&#9670;</div>
-    <p class="line" id="pass1line"></p>
-    <button class="btn continue" id="continue1">Continue</button>
-  </section>
-
-  <!-- Screen 3: second question -->
-  <section class="screen" id="q2" aria-label="Question two">
-    <div class="signet" aria-hidden="true">&#9670;</div>
-    <h1 class="question">What did the world hear the first time we kissed?</h1>
-    <div class="field" id="field2">
-      <input id="answer2" type="text" inputmode="text" enterkeyhint="go"
-             autocomplete="off" autocorrect="off" autocapitalize="off"
-             spellcheck="false" placeholder="…" aria-label="Your answer" />
-    </div>
-    <button class="btn enter" id="submit2">Enter</button>
-    <p class="refusal" id="refusal2" role="status" aria-live="polite">No. Think harder.</p>
-  </section>
-
-  <!-- Screen 4: final / completion / win screen -->
-  <!-- shown to the winner on completion; see show('victory') -->
-  <section class="screen" id="victory" aria-label="Complete">
-    <div class="signet" aria-hidden="true">&#9670;</div>
-    <p class="line">You've reached the end of the path. You've won.<br>Screenshot this page and send it to me to get your prize.</p>
-  </section>
-
-  <!-- Screen 5: end -->
-  <section class="screen" id="end" aria-label="The end, for now">
-    <div class="signet" aria-hidden="true">&#9670;</div>
-    <p class="line">The path is quiet for now, but know I am proud of you.</p>
-    <a class="btn finish" id="finishBtn"
-       href="sms:+18179051461?&body=I%20finished%20your%20game.">Finish</a>
-  </section>
-
-  <!-- Screen: closed (past the deadline) -->
-  <section class="screen" id="closed" aria-label="Closed">
-    <div class="signet" aria-hidden="true">&#9670;</div>
-    <p class="line">The window has closed. The path is gone now.</p>
+    <div class="poem" id="poemBody"></div>
   </section>
 
 <script>
-  // ── SET THIS to your deployed Worker URL (looks like https://the-game.YOURNAME.workers.dev) ──
-  var WORKER_URL = "https://the-game.eeeinvincible.workers.dev";
-
-  // The answers are NOT in this file anymore. The Worker checks them server-side
-  // and delivers the after-answer text and the completion SMS link on success.
-
-  // deadline: 5:00 PM Central (CDT, UTC-5), July 21, 2026. The Worker enforces this
-  // authoritatively using server time; this client copy is only for instant UX on load.
-  var DEADLINE = new Date('2026-07-21T17:00:00-05:00');
-  function isClosed(){ return new Date().getTime() >= DEADLINE.getTime(); }
+  // ── SET THIS to your deployed Worker URL (the same worker, with the new code) ──
+  var WORKER_URL = "https://the-game.eeeinvincible.workers.dev/";
 
   var REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var FADE = REDUCED ? 0 : 550;
 
   var screens = {
-    intro: document.getElementById('intro'),
     q1: document.getElementById('q1'),
-    pass1: document.getElementById('pass1'),
-    q2: document.getElementById('q2'),
-    end: document.getElementById('end'),
-    victory: document.getElementById('victory'),
-    closed: document.getElementById('closed'),
+    poem: document.getElementById('poem'),
   };
 
   function show(id){
     var next = screens[id];
     var current = document.querySelector('.screen.active');
     if(current === next) return;
-    if(id === 'end' || id === 'closed'){ document.body.classList.add('quiet'); }
 
     function reveal(){
       next.classList.add('active');
@@ -362,27 +285,19 @@
     }
   }
 
-  function closeNow(){
-    Object.keys(screens).forEach(function(k){
-      screens[k].classList.remove('active','shown');
-    });
-    document.body.classList.add('quiet');
-    screens.closed.classList.add('active','shown');
-  }
-
-  // ask the Worker whether a guess is correct (body sent as text/plain to avoid a CORS preflight)
-  function check(step, guess){
+  // ask the Worker whether a guess is correct (text/plain body avoids a CORS preflight)
+  function check(guess){
     return fetch(WORKER_URL, {
       method: 'POST',
-      body: JSON.stringify({ step: step, guess: guess })
+      body: JSON.stringify({ guess: guess })
     }).then(function(res){ return res.json(); });
   }
 
-  function wireQuestion(inputId, submitId, fieldId, refusalId, step, onPass){
-    var input = document.getElementById(inputId);
-    var submit = document.getElementById(submitId);
-    var field = document.getElementById(fieldId);
-    var refusal = document.getElementById(refusalId);
+  (function wireQuestion(){
+    var input = document.getElementById('answer1');
+    var submit = document.getElementById('submit1');
+    var field = document.getElementById('field1');
+    var refusal = document.getElementById('refusal1');
     var wrongMsg = (refusal.textContent || '').trim();
     var busy = false;
 
@@ -396,24 +311,23 @@
 
     function attempt(){
       if(busy) return;
-      if(isClosed()){ closeNow(); return; }
       busy = true;
       submit.style.opacity = '0.5';
       submit.style.pointerEvents = 'none';
 
-      check(step, input.value).then(function(data){
-        if(data && data.closed){ closeNow(); return; }
+      check(input.value).then(function(data){
         if(data && data.ok){
           refusal.classList.remove('show');
           field.classList.remove('refused');
           input.blur();
-          onPass(data);
+          document.getElementById('poemBody').innerHTML = data.poem || '';
+          show('poem');
         } else {
           refuse(wrongMsg);
           input.select();
         }
       }).catch(function(){
-        refuse('Something interrupted the path. Try again.');
+        refuse('Something broke. Try again.');
       }).then(function(){
         busy = false;
         submit.style.opacity = '';
@@ -426,25 +340,7 @@
       if(e.key === 'Enter'){ e.preventDefault(); attempt(); }
     });
     input.addEventListener('input', function(){ refusal.classList.remove('show'); });
-  }
-
-  wireQuestion('answer1','submit1','field1','refusal1','q1', function(data){
-    if(data && data.next){ document.getElementById('pass1line').innerHTML = data.next; }
-    show('pass1');
-  });
-  wireQuestion('answer2','submit2','field2','refusal2','q2', function(data){
-    if(data && data.sms){ document.getElementById('finishBtn').setAttribute('href', data.sms); }
-    show('end');
-  });
-
-  document.getElementById('beginBtn').addEventListener('click', function(){
-    if(isClosed()){ closeNow(); return; }
-    show('q1');
-  });
-  document.getElementById('continue1').addEventListener('click', function(){ show('q2'); });
-
-  // on load: if the window has already closed, show only the closed screen
-  if(isClosed()){ closeNow(); }
+  })();
 </script>
 
 <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "84ffa80e9d0a431eb09de9354a78a047"}'></script><!-- End Cloudflare Web Analytics -->
